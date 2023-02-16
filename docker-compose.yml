@@ -1,0 +1,10 @@
+version: "1.0"
+services:
+  zeitgeist-blockchain:
+    # todo
+  zeitgeist-frontend:
+    # todo
+  ipfs:
+    # todo
+  zeitgeist-subsquid:
+    # todo
