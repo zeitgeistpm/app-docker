@@ -1,7 +1,15 @@
 version: "1.0"
 services:
   zeitgeist-blockchain:
-    # todo
+    container_name: zeitgeist-node
+    image: zeitgeistpm/zeitgeist-node:v0.3.8
+    ports:
+      - "9944:9944"
+      - "30333:30333"
+      - "9933:9933"
+    volumes:
+      - .:/zeitgeist/data
+    command: --dev --tmp --ws-external --rpc-external --rpc-cors all --rpc-methods Unsafe
   zeitgeist-frontend:
     # todo
   ipfs:
