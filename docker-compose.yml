@@ -1,8 +1,8 @@
 version: "3.4"
 services:
-  zeitgeist-blockchain:
+  # zeitgeist-blockchain:
     # todo
-  zeitgeist-frontend:
+  # zeitgeist-frontend:
     # todo
   ipfs:
     container_name: ipfs
@@ -35,7 +35,7 @@ services:
     volumes:
       - cluster-data:/data/ipfs-cluster
 
-  zeitgeist-subsquid:
+  # zeitgeist-subsquid:
     # todo
 
 volumes:
