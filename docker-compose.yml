@@ -5,6 +5,39 @@ services:
   zeitgeist-frontend:
     # todo
   ipfs:
-    # todo
+    container_name: ipfs
+    build:
+      context: .
+      dockerfile: ipfs/Dockerfile
+    ports:
+      - "4001:4001"
+      - "5001:5001"
+      - "8080:8080"
+    volumes:
+      - ipfs-data:/data/ipfs
+
+  ipfs-cluster:
+    container_name: cluster0
+    image: ipfs/ipfs-cluster:latest
+    depends_on:
+      - ipfs
+    environment:
+      CLUSTER_PEERNAME: ipfs-cluster
+      CLUSTER_SECRET: ${CLUSTER_SECRET}
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs/tcp/5001
+      CLUSTER_CRDT_TRUSTEDPEERS: '*'
+      CLUSTER_RESTAPI_HTTPLISTENMULTIADDRESS: /ip4/0.0.0.0/tcp/9094
+      CLUSTER_MONITORPINGINTERVAL: 2s
+    ports:
+      - "127.0.0.1:9094:9094"
+      - "9095:9095"
+      - "9096:9096"
+    volumes:
+      - cluster-data:/data/ipfs-cluster
+
   zeitgeist-subsquid:
     # todo
+
+volumes:
+  ipfs-data:
+  cluster-data:
