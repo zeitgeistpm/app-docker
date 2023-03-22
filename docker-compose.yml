@@ -9,10 +9,10 @@ services:
     build:
       context: .
       dockerfile: ipfs/Dockerfile
-    # ports:
-      # - "4001:4001"
-      # - "5001:5001"
-      # - "8080:8080"
+    ports:
+      - "4001:4001"
+      - "5001:5001"
+      - "8080:8080"
     volumes:
       - ./compose/ipfs0:/data/ipfs
 
