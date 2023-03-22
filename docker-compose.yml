@@ -17,7 +17,7 @@ services:
       - ipfs-data:/data/ipfs
 
   ipfs-cluster:
-    container_name: cluster0
+    container_name: ipfs-cluster
     image: ipfs/ipfs-cluster:latest
     depends_on:
       - ipfs
