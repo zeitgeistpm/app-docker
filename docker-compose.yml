@@ -14,7 +14,7 @@ services:
       - "5001:5001"
       - "8080:8080"
     volumes:
-      - ipfs-data:/data/ipfs
+      - ./compose/ipfs0:/data/ipfs
 
   cluster0:
     container_name: cluster0
@@ -33,11 +33,7 @@ services:
       - "9095:9095"
       - "9096:9096"
     volumes:
-      - cluster-data:/data/ipfs-cluster
+      - ./compose/cluster0:/data/ipfs-cluster
 
   # zeitgeist-subsquid:
     # todo
-
-volumes:
-  ipfs-data:
-  cluster-data:
