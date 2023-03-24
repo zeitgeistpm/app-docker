@@ -21,6 +21,8 @@ services:
     image: ipfs/ipfs-cluster:latest
     depends_on:
       - ipfs
+    links:
+      - ipfs
     environment:
       CLUSTER_PEERNAME: ipfs-cluster
       CLUSTER_SECRET: ${CLUSTER_SECRET}
