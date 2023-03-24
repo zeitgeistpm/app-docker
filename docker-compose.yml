@@ -22,7 +22,7 @@ services:
     depends_on:
       - ipfs
     links:
-      - ipfs
+      - ipfs 
     environment:
       CLUSTER_PEERNAME: ipfs-cluster
       CLUSTER_SECRET: ${CLUSTER_SECRET}
