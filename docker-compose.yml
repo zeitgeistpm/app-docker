@@ -19,7 +19,7 @@ services:
       - "5001:5001"
       - "8080:8080"
     volumes:
-      - .ipfs/compose/ipfs:/data/ipfs
+      - ./compose/ipfs:/data/ipfs
     networks:
       ipfs:
         ipv4_address: 172.20.0.6
@@ -45,7 +45,7 @@ services:
       - "9095:9095"
       - "9096:9096"
     volumes:
-      - .ipfs/compose/ipfs-cluster:/data/ipfs-cluster
+      - ./compose/ipfs-cluster:/data/ipfs-cluster
     networks:
       ipfs:
         ipv4_address: 172.20.0.7
