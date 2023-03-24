@@ -24,7 +24,7 @@ services:
     links:
       - ipfs 
     environment:
-      - CLUSTER_IPFSPROXY_NODEMULTIADDRESS=/ip4/${IPFS_IP}/tcp/5001
+      - CLUSTER_IPFSPROXY_NODEMULTIADDRESS=/ip4/$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker-compose ps -q ipfs))/tcp/5001
       - CLUSTER_PEERNAME=ipfs-cluster
       - CLUSTER_SECRET=${CLUSTER_SECRET}
       - CLUSTER_IPFSHTTP_NODEMULTIADDRESS=/dns4/ipfs/tcp/5001
