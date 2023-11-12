@@ -1,5 +1,11 @@
 version: "3.8"
 
+networks:
+  blockchain:
+  frontend:
+  ipfs:
+  subsquid:
+
 services:
   ipfs:
     container_name: ipfs
@@ -10,6 +16,8 @@ services:
       - ${IPFS_SWARM_PORT}:4001
       - ${IPFS_API_PORT}:5001
       - ${IPFS_GATEWAY_PORT}:8080
+    networks:
+      - ipfs
     volumes:
       - ${BASE_PATH}/ipfs:/data/ipfs
 
@@ -22,12 +30,20 @@ services:
       - ${ZTG_CHAIN_PORT}:30333
       - ${ZTG_CHAIN_RPC_PORT}:9933
       - ${ZTG_CHAIN_WS_PORT}:9944
+    networks:
+      - blockchain
     volumes:
       - ${BASE_PATH}:/zeitgeist/data
     command: --base-path=/zeitgeist/data --dev --ws-external --rpc-external --rpc-cors all --rpc-methods Unsafe
 
-  # zeitgeist-frontend:
-    # todo
-
-  # zeitgeist-subsquid:
-    # todo
+#  zeitgeist-frontend:
+#    networks:
+#      - blockchain
+#      - frontend
+#      - ipfs
+#      - subsquid
+#  zeitgeist-subsquid:
+#    networks:
+#      - blockchain
+#      - ipfs
+#      - subsquid
