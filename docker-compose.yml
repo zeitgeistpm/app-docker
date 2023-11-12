@@ -1,14 +1,11 @@
-version: "3.4"
+version: "3.8"
+
 networks:
   ipfs:
     ipam:
       config:
         - subnet: 172.20.0.0/24
 services:
-  # zeitgeist-blockchain:
-    # todo
-  # zeitgeist-frontend:
-    # todo
   ipfs:
     container_name: ipfs
     build:
@@ -49,6 +46,23 @@ services:
     networks:
       ipfs:
         ipv4_address: 172.20.0.7
+
+
+  zeitgeist-blockchain:
+    container_name: zeitgeist-node
+    image: zeitgeistpm/zeitgeist-node:latest
+    # Docker container user "zeitgeist" has insufficient permissions
+    user: root
+    ports:
+      - ${ZTG_CHAIN_PORT}:30333
+      - ${ZTG_CHAIN_RPC_PORT}:9933
+      - ${ZTG_CHAIN_WS_PORT}:9944
+    volumes:
+      - ${BASE_PATH}:/zeitgeist/data
+    command: --base-path=/zeitgeist/data --dev --ws-external --rpc-external --rpc-cors all --rpc-methods Unsafe
+
+  # zeitgeist-frontend:
+    # todo
 
   # zeitgeist-subsquid:
     # todo
