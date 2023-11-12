@@ -1,18 +1,21 @@
-version: "1.0"
+version: "3.8"
+
 services:
   zeitgeist-blockchain:
     container_name: zeitgeist-node
-    image: zeitgeistpm/zeitgeist-node:v0.3.8
+    image: zeitgeistpm/zeitgeist-node:latest
+    # Docker container user "zeitgeist" has insufficient permissions
+    user: root
     ports:
-      - "9944:9944"
-      - "30333:30333"
-      - "9933:9933"
+      - ${ZTG_CHAIN_PORT}:30333
+      - ${ZTG_CHAIN_RPC_PORT}:9933
+      - ${ZTG_CHAIN_WS_PORT}:9944
     volumes:
-      - .:/zeitgeist/data
-    command: --dev --tmp --ws-external --rpc-external --rpc-cors all --rpc-methods Unsafe
-  zeitgeist-frontend:
+      - ${BASE_PATH}:/zeitgeist/data
+    command: --base-path=/zeitgeist/data --dev --ws-external --rpc-external --rpc-cors all --rpc-methods Unsafe
+  #zeitgeist-frontend:
     # todo
-  ipfs:
+  #ipfs:
     # todo
-  zeitgeist-subsquid:
+  #zeitgeist-subsquid:
     # todo
