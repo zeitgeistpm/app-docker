@@ -1,11 +1,5 @@
 version: "3.8"
 
-networks:
-  ipfs:
-    ipam:
-      config:
-        - subnet: 172.20.0.0/24
-
 services:
   ipfs:
     container_name: ipfs
@@ -17,10 +11,7 @@ services:
       - "5001:5001"
       - "8080:8080"
     volumes:
-      - ./compose/ipfs:/data/ipfs
-    networks:
-      ipfs:
-        ipv4_address: 172.20.0.6
+      - ${BASE_PATH}/ipfs:/data/ipfs
 
   zeitgeist-blockchain:
     container_name: zeitgeist-node
