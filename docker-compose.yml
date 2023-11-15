@@ -6,6 +6,7 @@ networks:
   ipfs:
   subsquid:
 
+
 services:
   autoheal:
     restart: always
@@ -50,14 +51,97 @@ services:
       - ${BASE_PATH}:/zeitgeist/data
     command: --base-path=/zeitgeist/data --dev --ws-external --rpc-external --rpc-cors all --rpc-methods Unsafe
 
+  indexer-db:
+    container_name: indexer-db
+    image: cockroachdb/cockroach:v22.2.2
+    ports:
+      - 26257:26257
+    networks:
+      - subsquid
+    volumes:
+      - ${BASE_PATH}:/cockroach/cockroach-data
+    command: start-single-node --insecure
+
+  indexer:
+    container_name: indexer
+    image: subsquid/substrate-ingest:1
+    restart: unless-stopped
+    depends_on:
+      - zeitgeist-blockchain
+      - indexer-db
+    networks:
+      - blockchain
+      - subsquid
+    ports:
+      - 9091:9090
+    command: -e ws://zeitgeist-node:9944 -c 5 --out postgres://root@indexer-db:26257/defaultdb
+
+  indexer-api:
+    container_name: indexer-api
+    image: subsquid/substrate-gateway:2.5.0
+    depends_on:
+      - indexer
+    networks:
+      - subsquid
+    environment:
+      RUST_LOG: "actix_web=info,actix_server=info"
+    ports:
+      - 8888:8000
+    command: --database-url postgres://root@indexer-db:26257/defaultdb --database-max-connections 10
+
+  processor-db:
+    container_name: processor-db
+    image: postgres:14
+    networks:
+      - subsquid
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+
+  processor:
+    container_name: processor
+    image: zeitgeistpm/squid-processor:latest
+    depends_on:
+      - indexer-api
+      - processor-db
+      - ipfs
+    networks:
+      - subsquid
+    environment:
+      NODE_ENV: local
+      PROJECT_NAME: zeitgeist-squid
+      WS_NODE_URL: ws://zeitgeist-node:9944
+      DB_HOST: processor-db
+      DB_NAME: postgres
+      DB_PORT: 5432
+      BATCH_SIZE: 100
+      INDEXER_ENDPOINT_URL: http://host.docker.internal:8888/graphql
+      IPFS_CLIENT_URL: http://ipfs:5001
+      PROCESSOR_PROMETHEUS_PORT: 9090
+    ports:
+      - 9090:9090
+
+  processor-api:
+    container_name: processor-api
+    image: zeitgeistpm/squid-processor:latest
+    depends_on:
+      - processor
+    networks:
+      - subsquid
+    environment:
+      DB_HOST: processor-db
+      DB_NAME: postgres
+      DB_PORT: 5432
+      GQL_PORT: 4350
+    ports:
+      - 4350:4350
+    command: yarn api:start
+
 #  zeitgeist-frontend:
 #    networks:
 #      - blockchain
 #      - frontend
-#      - ipfs
-#      - subsquid
-#  zeitgeist-subsquid:
-#    networks:
-#      - blockchain
 #      - ipfs
 #      - subsquid
