@@ -62,47 +62,43 @@ services:
     volumes:
       - ${BASE_PATH}/subsquid:/var/lib/postgresql/data
 
-  processor:
-    container_name: processor
+  subsquid:
+    container_name: subsquid
     image: zeitgeistpm/squid-processor:latest
     depends_on:
-      - indexer-api
-      - processor-db
+      - subsquid-db
       - ipfs
     networks:
-      - subsquid
+      - backnet
     environment:
       NODE_ENV: local
       PROJECT_NAME: zeitgeist-squid
-      WS_NODE_URL: ws://zeitgeist-node:$ZTG_CHAIN_WS_PORT
-      DB_HOST: processor-db
+      WS_NODE_URL: ws://zeitgeist-blockchain:$ZTG_CHAIN_WS_PORT
+      DB_HOST: subsquid-db
       DB_NAME: postgres
-      DB_PORT: $PROCESSOR_DB_PORT
+      DB_PORT: $SUBSQUID_DB_PORT
+      IPFS_CLIENT_URL: http://ipfs:5001
       BATCH_SIZE: 100
-      INDEXER_ENDPOINT_URL: http://$INDEXER_API_HOST:$INDEXER_API_PORT/graphql
-      PROCESSOR_PROMETHEUS_PORT: $PROCESSOR_PROM_PORT
+      PROCESSOR_PROMETHEUS_PORT: $SUBSQUID_PROM_PORT
     ports:
-      - $PROCESSOR_PROM_PORT:9090
+      - $SUBSQUID_PROM_PORT:9090
 
-  processor-api:
-    container_name: processor-api
+  subsquid-api:
+    container_name: subsquid-api
     image: zeitgeistpm/squid-processor:latest
     depends_on:
-      - processor
+      - subsquid-db
     networks:
-      - subsquid
+      - backnet
     environment:
-      DB_HOST: processor-db
+      DB_HOST: subsquid-db
       DB_NAME: postgres
-      DB_PORT: $PROCESSOR_DB_PORT
-      GQL_PORT: $PROCESSOR_API_PORT
+      DB_PORT: $SUBSQUID_DB_PORT
+      GQL_PORT: $SUBSQUID_API_PORT
     ports:
-      - $PROCESSOR_API_PORT:4350
+      - $SUBSQUID_API_PORT:4350
     command: yarn api:start
 
 #  zeitgeist-frontend:
 #    networks:
-#      - blockchain
-#      - frontend
-#      - ipfs
-#      - subsquid
+#      - frontnet
