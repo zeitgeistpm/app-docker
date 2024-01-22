@@ -52,6 +52,11 @@ services:
   subsquid-db:
     container_name: subsquid-db
     image: postgres:14
+    healthcheck:
+      test: /usr/bin/pg_isready
+      interval: 5s
+      timeout: 10s
+      retries: 120
     networks:
       - backnet
     environment:
@@ -64,8 +69,12 @@ services:
     container_name: subsquid
     image: zeitgeistpm/squid-processor:latest
     depends_on:
-      - subsquid-db
-      - ipfs
+      ipfs:
+        condition: service_started
+      subsquid-db:
+        condition: service_healthy
+      zeitgeist-blockchain:
+        condition: service_started
     networks:
       - backnet
     environment:
