@@ -1,10 +1,9 @@
 version: "3.8"
 
 networks:
-  blockchain:
-  frontend:
-  ipfs:
-  subsquid:
+  backnet:
+  frontnet:
+
 
 services:
   autoheal:
@@ -25,7 +24,7 @@ services:
       - ${IPFS_API_PORT}:5001
       - ${IPFS_GATEWAY_PORT}:8080
     networks:
-      - ipfs
+      - backnet
     volumes:
       - ${BASE_PATH}/ipfs:/data/ipfs
     healthcheck:
@@ -45,19 +44,69 @@ services:
       - ${ZTG_CHAIN_RPC_PORT}:9933
       - ${ZTG_CHAIN_WS_PORT}:9944
     networks:
-      - blockchain
+      - backnet
     volumes:
       - ${BASE_PATH}:/zeitgeist/data
     command: --base-path=/zeitgeist/data --dev --ws-external --rpc-external --rpc-cors all --rpc-methods Unsafe
 
+  subsquid-db:
+    container_name: subsquid-db
+    image: postgres:14
+    healthcheck:
+      test: /usr/bin/pg_isready
+      interval: 5s
+      timeout: 10s
+      retries: 120
+    networks:
+      - backnet
+    environment:
+      PGUSER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ${BASE_PATH}/subsquid:/var/lib/postgresql/data
+
+  subsquid:
+    container_name: subsquid
+    image: zeitgeistpm/squid-processor:latest
+    depends_on:
+      ipfs:
+        condition: service_started
+      subsquid-db:
+        condition: service_healthy
+      zeitgeist-blockchain:
+        condition: service_started
+    networks:
+      - backnet
+    environment:
+      NODE_ENV: local
+      PROJECT_NAME: zeitgeist-squid
+      WS_NODE_URL: ws://zeitgeist-blockchain:9944
+      IPFS_CLIENT_URL: http://ipfs:5001
+      DB_HOST: subsquid-db
+      DB_NAME: postgres
+      DB_PORT: 5432
+      BATCH_SIZE: 100
+      PROCESSOR_PROMETHEUS_PORT: 9090
+    ports:
+      - $SUBSQUID_PROM_PORT:9090
+
+  subsquid-api:
+    container_name: subsquid-api
+    image: zeitgeistpm/squid-processor:latest
+    depends_on:
+      - subsquid-db
+    networks:
+      - backnet
+    environment:
+      DB_HOST: subsquid-db
+      DB_NAME: postgres
+      DB_PORT: 5432
+      GQL_PORT: 4350
+    ports:
+      - $SUBSQUID_API_PORT:4350
+    command: yarn api:start
+
 #  zeitgeist-frontend:
 #    networks:
-#      - blockchain
-#      - frontend
-#      - ipfs
-#      - subsquid
-#  zeitgeist-subsquid:
-#    networks:
-#      - blockchain
-#      - ipfs
-#      - subsquid
+#      - frontnet
