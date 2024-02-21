@@ -113,9 +113,16 @@ services:
     build:
       context: .
       dockerfile: ui/Dockerfile
+    depends_on:
+      ipfs:
+        condition: service_started
+      subsquid-db:
+        condition: service_healthy
+      zeitgeist-blockchain:
+        condition: service_started
     ports:
       - "3000:3000"
     volumes:
       - ${BASE_PATH}:/app/ui
     environment:
-      - NODE_ENV=development
+      - NEXT_PUBLIC_VERCEL_ENV=local

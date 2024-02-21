@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y git
 
 # Clone the repository from GitHub
-RUN git clone https://github.com/zeitgeistpm/ui.git .
+RUN git clone -b tr-docker-changes https://github.com/zeitgeistpm/ui.git
 
 # Increase memory available to Node.js process
 ENV NODE_OPTIONS="--max-old-space-size=4096"
