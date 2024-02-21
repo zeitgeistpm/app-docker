@@ -4,7 +4,6 @@ networks:
   backnet:
   frontnet:
 
-
 services:
   autoheal:
     restart: always
@@ -107,6 +106,16 @@ services:
       - $SUBSQUID_API_PORT:4350
     command: yarn api:start
 
-#  zeitgeist-frontend:
-#    networks:
-#      - frontnet
+  zeitgeist-frontend:
+    networks:
+      - frontnet
+    container_name: ui
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ${BASE_PATH}:/app/ui
+    environment:
+      - NODE_ENV=development
