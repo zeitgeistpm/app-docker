@@ -99,6 +99,8 @@ services:
     networks:
       - backnet
     environment:
+      NODE_ENV: local
+      WS_NODE_URL: ws://zeitgeist-blockchain:9944
       DB_HOST: subsquid-db
       DB_NAME: postgres
       DB_PORT: 5432
