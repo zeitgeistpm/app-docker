@@ -110,7 +110,7 @@ services:
 
   zeitgeist-frontend:
     networks:
-      - frontnet
+      - backnet
     container_name: ui
     build:
       context: .
