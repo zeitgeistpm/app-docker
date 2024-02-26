@@ -128,3 +128,5 @@ services:
       - ${BASE_PATH}:/app/ui
     environment:
       - NEXT_PUBLIC_VERCEL_ENV=local
+      - NEXT_PUBLIC_SANITY_PROJECT_ID=4wbnjof1
+      - NEXT_PUBLIC_SANITY_VERSION=2022-03-07
