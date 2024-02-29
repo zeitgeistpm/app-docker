@@ -130,3 +130,7 @@ services:
       - NEXT_PUBLIC_VERCEL_ENV=local
       - NEXT_PUBLIC_SANITY_PROJECT_ID=4wbnjof1
       - NEXT_PUBLIC_SANITY_VERSION=2022-03-07
+      - NEXT_PUBLIC_SUBSQUID_ENDPOINT=http://localhost:4350/graphql
+      - NEXT_PUBLIC_WS_ENDPOINT=ws://127.0.0.1:9944
+      - SUBSQUID_ENDPOINT=http://subsquid-api:4350/graphql
+      - WS_ENDPOINT=ws://zeitgeist-blockchain:9944
