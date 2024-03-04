@@ -4,7 +4,6 @@ networks:
   backnet:
   frontnet:
 
-
 services:
   autoheal:
     restart: always
@@ -99,6 +98,8 @@ services:
     networks:
       - backnet
     environment:
+      NODE_ENV: local
+      WS_NODE_URL: ws://zeitgeist-blockchain:9944
       DB_HOST: subsquid-db
       DB_NAME: postgres
       DB_PORT: 5432
@@ -107,6 +108,29 @@ services:
       - $SUBSQUID_API_PORT:4350
     command: yarn api:start
 
-#  zeitgeist-frontend:
-#    networks:
-#      - frontnet
+  zeitgeist-frontend:
+    networks:
+      - backnet
+    container_name: ui
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+    depends_on:
+      ipfs:
+        condition: service_started
+      subsquid-db:
+        condition: service_healthy
+      zeitgeist-blockchain:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    volumes:
+      - ${BASE_PATH}:/app/ui
+    environment:
+      - NEXT_PUBLIC_VERCEL_ENV=local
+      - NEXT_PUBLIC_SANITY_PROJECT_ID=4wbnjof1
+      - NEXT_PUBLIC_SANITY_VERSION=2022-03-07
+      - NEXT_PUBLIC_SUBSQUID_ENDPOINT=http://localhost:4350/graphql
+      - NEXT_PUBLIC_WS_ENDPOINT=ws://127.0.0.1:9944
+      - SUBSQUID_ENDPOINT=http://subsquid-api:4350/graphql
+      - WS_ENDPOINT=ws://zeitgeist-blockchain:9944
